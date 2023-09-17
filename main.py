@@ -36,7 +36,6 @@ def is_file_up_to_date(file_name):
     except ValueError:
         return False
 
-# Загрузка HTML-кода вашей веб-страницы
 url = 'https://xn--85-6kc3bfr2e.xn--80acgfbsl1azdqr.xn--p1ai/?section_id=13'
 html_content = download_html(url)
 
