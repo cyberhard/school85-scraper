@@ -1,34 +1,29 @@
 {
-  // ─── ЛОГИ ───────────────────────────────────────────────────────────────
   "log": {
-    "level": "warning",
-    "timestamp": true
+    "level": "warn"
   },
-
-  // ─── DNS (при желании добавьте detour:"vmess-out", чтобы DNS шёл тоже через VPN) ─
   "dns": {
     "servers": [
-      { "address": "8.8.8.8" },
-      { "address": "1.1.1.1" }
+      {
+        "tag": "remote",
+        "address": "8.8.8.8"
+      },
+      {
+        "tag": "remote",
+        "address": "1.1.1.1"
+      }
     ]
   },
-
-  // ─── TUN-ИНТЕРФЕЙС ──────────────────────────────────────────────────────
   "inbounds": [
     {
       "type": "tun",
-      "tag": "tun-in",
       "interface_name": "tun0",
-      "inet4_address": "10.0.0.2/24",
-      // если нужен IPv6 — добавьте  "inet6_address":"fdfe:1::2/64",
-      "mtu": 1500,
-      "auto_route": true,        // создаёт default-route через tun0
-      "strict_route": false,     // не удаляет уже существующие маршруты
-      "stack": "system"          // используется системный сетевой стек
+      "inet4_address": "172.19.0.1/30",
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "system"
     }
   ],
-
-  // ─── ВЫХОДЫ ─────────────────────────────────────────────────────────────
   "outbounds": [
     {
       "type": "vmess",
@@ -36,34 +31,30 @@
       "server": "85.192.25.13",
       "server_port": 8642,
       "uuid": "1eb6e917-774b-4a84-aff6-b058577c60a5",
-      "security": "chacha20-poly1305",
-      "alter_id": 0,
-      "transport": { "type": "tcp" }
+      "security": "chacha20-poly1305"
     },
-
-    { "type": "direct",  "tag": "direct"  },
-    { "type": "block",   "tag": "blocked" }
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "blocked"
+    }
   ],
-
-  // ─── МАРШРУТИЗАЦИЯ ──────────────────────────────────────────────────────
   "route": {
-    "domain_strategy": "as_is",
+    "auto_detect_interface": true,
+    "final": "vmess-out",
     "rules": [
       {
-        "outbound": "direct",
+        "type": "ip_cidr",
         "ip_cidr": [
-          "127.0.0.0/8",
-          "10.0.0.0/8",
-          "172.16.0.0/12",
           "192.168.0.0/16",
-          "224.0.0.0/4",
-          "255.255.255.255/32"
-        ]
-      },
-      {
-        "outbound": "vmess-out",
-        "ip_cidr": ["0.0.0.0/0", "::/0"]   // всё остальное – через VPN
+          "10.0.0.0/8",
+          "127.0.0.1/8"
+        ],
+        "outbound": "direct"
       }
     ]
   }
-    }
+}
