@@ -8,11 +8,16 @@
   "inbounds": [
     {
       "tag": "tun-in",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "socks",
+      "protocol": "tun",
       "settings": {
-        "udp": true
+        "address": ["10.0.0.2/24"],
+        "gateway": "10.0.0.1",
+        "mtu": 1500,
+        "stack": "system"
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls"]
       }
     }
   ],
@@ -55,13 +60,19 @@
     "rules": [
       {
         "type": "field",
-        "ip": ["192.168.0.0/16", "10.0.0.0/8", "127.0.0.1/8"],
+        "ip": [
+          "127.0.0.0/8",
+          "10.0.0.0/8",
+          "192.168.0.0/16",
+          "172.16.0.0/12",
+          "224.0.0.0/4",
+          "255.255.255.255/32"
+        ],
         "outboundTag": "direct"
       },
       {
         "type": "field",
-        "outboundTag": "vmess-out",
-        "network": "tcp,udp"
+        "outboundTag": "vmess-out"
       }
     ]
   }
