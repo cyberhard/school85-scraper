@@ -1,0 +1,68 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "dns": {
+    "servers": ["8.8.8.8", "1.1.1.1"]
+  },
+  "inbounds": [
+    {
+      "tag": "tun-in",
+      "port": 10808,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "udp": true
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "vmess-out",
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "85.192.25.13",
+            "port": 8642,
+            "users": [
+              {
+                "id": "1eb6e917-774b-4a84-aff6-b058577c60a5",
+                "alterId": 0,
+                "security": "chacha20-poly1305"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp"
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "tag": "blocked",
+      "protocol": "blackhole",
+      "settings": {}
+    }
+  ],
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "ip": ["192.168.0.0/16", "10.0.0.0/8", "127.0.0.1/8"],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "outboundTag": "vmess-out",
+        "network": "tcp,udp"
+      }
+    ]
+  }
+}
